@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spacing -->
+    <dimen name="spacing_xxs">2dp</dimen>
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_medium">12dp</dimen>
+    <dimen name="spacing_large">16dp</dimen>
+    <dimen name="spacing_xlarge">20dp</dimen>
+    <dimen name="spacing_xxlarge">24dp</dimen>
+    <dimen name="spacing_huge">32dp</dimen>
+
+    <!-- Component Sizing -->
+    <dimen name="touch_target_min">48dp</dimen>
+    <dimen name="mini_player_height">60dp</dimen>
+    <dimen name="bottom_nav_height">64dp</dimen>
+    <dimen name="bottom_bar_total_height">124dp</dimen>
+    <dimen name="song_item_cover_size">52dp</dimen>
+    <dimen name="album_card_width">140dp</dimen>
+    <dimen name="album_card_height">180dp</dimen>
+    <dimen name="artist_avatar_size">96dp</dimen>
+
+    <!-- Corner Radii -->
+    <dimen name="radius_small">6dp</dimen>
+    <dimen name="radius_medium">10dp</dimen>
+    <dimen name="radius_large">16dp</dimen>
+    <dimen name="radius_full">999dp</dimen>
+
+    <!-- Typography -->
+    <dimen name="text_size_caption">11sp</dimen>
+    <dimen name="text_size_body">13sp</dimen>
+    <dimen name="text_size_title">16sp</dimen>
+    <dimen name="text_size_headline">20sp</dimen>
+    <dimen name="text_size_hero">26sp</dimen>
+</resources>

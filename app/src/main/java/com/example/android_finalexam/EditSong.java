@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class EditSong extends AppCompatActivity {
@@ -31,14 +32,22 @@ public class EditSong extends AppCompatActivity {
             edtArtist.setText(song.getArtist());
             edtNameImg.setText(song.getImageResource());
             edtNameAudio.setText(song.getAudioResource());
+        } else {
+            Toast.makeText(this, "Không tìm thấy dữ liệu bài hát", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
 
         btnUpdate.setOnClickListener(v -> {
-            // Lấy dữ liệu bài hát trước khi cập nhật
-            String newTitle = edtTitle.getText().toString();
-            String newArtist = edtArtist.getText().toString();
-            String newImageResource = edtNameImg.getText().toString();
-            String newAudioResource = edtNameAudio.getText().toString();
+            String newTitle = edtTitle.getText().toString().trim();
+            String newArtist = edtArtist.getText().toString().trim();
+            String newImageResource = edtNameImg.getText().toString().trim();
+            String newAudioResource = edtNameAudio.getText().toString().trim();
+
+            if (newTitle.isEmpty() || newArtist.isEmpty() || newImageResource.isEmpty() || newAudioResource.isEmpty()) {
+                Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             // Cập nhật bài hát trong cơ sở dữ liệu
             DatabaseHelper databaseHelper = new DatabaseHelper(this);
@@ -58,7 +67,6 @@ public class EditSong extends AppCompatActivity {
                 Toast.makeText(this, "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
             }
         });
-
 
         btnCancel.setOnClickListener(v -> {
             setResult(RESULT_CANCELED);

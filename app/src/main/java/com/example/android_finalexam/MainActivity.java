@@ -18,7 +18,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
     ImageView ivCover;
     int currentPosition;
     ArrayList<Song> songList;
-    Thread updateSeekBarThread;
+    private android.os.Handler seekBarHandler = new android.os.Handler();
+    private Runnable seekBarRunnable;
 
     DatabaseHelper databaseHelper;
     SQLiteDatabase db;
@@ -58,33 +58,46 @@ public class MainActivity extends AppCompatActivity {
         databaseHelper = new DatabaseHelper(this);
         db = databaseHelper.getWritableDatabase();
 
-        playSong(currentPosition, true);
+        seekBarRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (mediaPlayer != null) {
+                    try {
+                        if (mediaPlayer.isPlaying()) {
+                            int current = mediaPlayer.getCurrentPosition();
+                            tvTimeBegin.setText(millisecondsToString(current));
+                            seekBarTime.setProgress(current);
+                        }
+                    } catch (IllegalStateException ignored) {}
+                    seekBarHandler.postDelayed(this, 500);
+                }
+            }
+        };
+
+        if (songList != null && !songList.isEmpty()) {
+            playSong(currentPosition, true);
+        }
 
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
-                if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.pause();
-                    btnPlay.setText("Play");
-                } else {
-                    mediaPlayer.start();
-                    btnPlay.setText("Pause");
+                if (mediaPlayer != null) {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        btnPlay.setText("▶");
+                    } else {
+                        mediaPlayer.start();
+                        btnPlay.setText("⏸");
+                    }
                 }
-            }
-        });
-
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                btnPlay.setText("Play");
             }
         });
 
         seekBarTime.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
+                if (fromUser && mediaPlayer != null) {
                     mediaPlayer.seekTo(progress);
                 }
                 tvTimeBegin.setText(millisecondsToString(progress));
@@ -112,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         btnPlayNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (songList == null || songList.isEmpty()) return;
                 currentPosition++;
                 if (currentPosition >= songList.size()) {
                     currentPosition = 0;
@@ -123,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         btnPlayPrevious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (songList == null || songList.isEmpty()) return;
                 currentPosition--;
                 if (currentPosition < 0) {
                     currentPosition = songList.size() - 1;
@@ -134,12 +149,15 @@ public class MainActivity extends AppCompatActivity {
         btnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addSongToFavorites(songList.get(currentPosition));
+                if (songList != null && currentPosition >= 0 && currentPosition < songList.size()) {
+                    addSongToFavorites(songList.get(currentPosition));
+                }
             }
         });
     }
 
     private void playSong(int position, boolean autoPlay) {
+        if (songList == null || position < 0 || position >= songList.size()) return;
         Song song = songList.get(position);
 
         tvNamePlaying.setText(song.getTitle());
@@ -147,42 +165,66 @@ public class MainActivity extends AppCompatActivity {
 
         // Set image resource
         int imageResource = getResources().getIdentifier(song.getImageResource(), "drawable", getPackageName());
-        ivCover.setImageResource(imageResource);
+        if (imageResource != 0) {
+            ivCover.setImageResource(imageResource);
+        } else {
+            ivCover.setImageResource(R.drawable.playinglogo);
+        }
 
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.release();
+            mediaPlayer = null;
         }
 
         // Get resource ID of audio file
         int audioResourceId = getResources().getIdentifier(song.getAudioResource(), "raw", getPackageName());
+        if (audioResourceId == 0) {
+            Toast.makeText(this, "Không tìm thấy file âm thanh cho bài hát này", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Create
         mediaPlayer = MediaPlayer.create(MainActivity.this, audioResourceId);
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                tvTimeEnd.setText(millisecondsToString(mp.getDuration()));
-                seekBarTime.setMax(mp.getDuration());
-                if (autoPlay) {
-                    mediaPlayer.start();
-                    btnPlay.setText("Pause");
-                } else {
-                    btnPlay.setText("Play");
-                }
-                startSeekBarUpdater();
-            }
-        });
+        if (mediaPlayer == null) {
+            Toast.makeText(this, "Không thể phát bài hát này", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int duration = mediaPlayer.getDuration();
+        tvTimeEnd.setText(millisecondsToString(duration));
+        seekBarTime.setMax(duration);
+
+        if (autoPlay) {
+            mediaPlayer.start();
+            btnPlay.setText("⏸");
+        } else {
+            btnPlay.setText("▶");
+        }
+
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                btnPlay.setText("Play");
+                btnPlay.setText("▶");
             }
         });
+
+        startSeekBarUpdater();
     }
 
-
     private void addSongToFavorites(Song song) {
+        Cursor cursor = db.query(DatabaseHelper.TABLE_FAVORITES, null,
+                DatabaseHelper.COLUMN_TITLE + " = ? AND " + DatabaseHelper.COLUMN_ARTIST + " = ?",
+                new String[]{song.getTitle(), song.getArtist()}, null, null, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.close();
+            Toast.makeText(MainActivity.this, "Bài hát đã có trong danh sách yêu thích", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_TITLE, song.getTitle());
         values.put(DatabaseHelper.COLUMN_ARTIST, song.getArtist());
@@ -193,33 +235,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startSeekBarUpdater() {
-        if (updateSeekBarThread != null) {
-            updateSeekBarThread.interrupt();
-        }
-
-        updateSeekBarThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (mediaPlayer != null) {
-                    if (mediaPlayer.isPlaying()) {
-                        try {
-                            final int current = mediaPlayer.getCurrentPosition();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    tvTimeBegin.setText(millisecondsToString(current));
-                                    seekBarTime.setProgress(current);
-                                }
-                            });
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        });
-        updateSeekBarThread.start();
+        seekBarHandler.removeCallbacks(seekBarRunnable);
+        seekBarHandler.post(seekBarRunnable);
     }
 
     private String millisecondsToString(long milliseconds) {
@@ -237,12 +254,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (seekBarHandler != null && seekBarRunnable != null) {
+            seekBarHandler.removeCallbacks(seekBarRunnable);
+        }
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
-        }
-        if (updateSeekBarThread != null) {
-            updateSeekBarThread.interrupt();
         }
         if (db != null) {
             db.close();

@@ -3,126 +3,184 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#24293E">
+    android:background="@color/spotify_black"
+    android:padding="20dp">
 
-    <Button
-        android:id="@+id/btnBack"
-        android:layout_margin="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Back to List"
-        android:textColor="#F4F5FC"
-        android:backgroundTint="#8EBBFF"/>
-
-    <Button
-        android:id="@+id/btnLike"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Like"
-        android:layout_marginLeft="8dp"
-        android:gravity="center"
-        android:textColor="#F4F5FC"
-        android:backgroundTint="#8EBBFF"/>
-
-    <ImageView
-        android:id="@+id/ivCover"
-        android:layout_marginTop="60dp"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_gravity="center"
-        android:scaleType="centerCrop" />
-
-    <TextView
-        android:id="@+id/tvNamePlaying"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:layout_gravity="center"
-        android:textAllCaps="true"
-        android:textStyle="bold"
-        android:textColor="#F4F5FC"
-        android:padding="10dp" />
-
-    <TextView
-        android:id="@+id/tvArtist"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="#F4F5FC"
-        android:layout_gravity="center"
-        android:padding="5dp" />
-
-    <SeekBar
-        android:id="@+id/seekBarTime"
+    <!-- Top Navigation Bar Spotify Style -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp">
 
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:text="⌵ Thu nhỏ"
+            android:textSize="13sp"
+            android:textColor="@color/spotify_text_primary"
+            android:background="@drawable/button_secondary"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="ĐANG PHÁT TỪ THƯ VIỆN"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08"
+            android:textColor="@color/spotify_text_secondary" />
+
+        <Button
+            android:id="@+id/btnLike"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:text="💚 Thích"
+            android:textSize="13sp"
+            android:textColor="@color/spotify_green"
+            android:background="@drawable/button_secondary"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp" />
+    </RelativeLayout>
+
+    <!-- Album Art Section -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvTimeBegin"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        <ImageView
+            android:id="@+id/ivCover"
+            android:layout_width="280dp"
+            android:layout_height="280dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/playinglogo"
+            android:background="@drawable/player_cover_bg"
+            android:clipToOutline="true"
+            android:elevation="12dp" />
+
+        <!-- Title & Artist Row with Spotify Typography -->
+        <RelativeLayout
+            android:layout_width="280dp"
             android:layout_height="wrap_content"
-            android:text="00:00"
-            android:textColor="#F4F5FC"
-            android:layout_marginLeft="8dp"
-            android:gravity="start"/>
+            android:layout_marginTop="24dp">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
+                <TextView
+                    android:id="@+id/tvNamePlaying"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/spotify_text_primary"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
 
-        <TextView
-            android:id="@+id/tvTimeEnd"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:textColor="#F4F5FC"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:text="00:00"
-            android:gravity="end"/>
+                <TextView
+                    android:id="@+id/tvArtist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="@color/spotify_text_secondary"
+                    android:layout_marginTop="4dp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 
+    <!-- Progress & Controls Section -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:orientation="vertical"
+        android:layout_marginBottom="24dp">
 
-        <Button
-            android:id="@+id/btnPlayPrevious"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        <SeekBar
+            android:id="@+id/seekBarTime"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Previous"
-            android:layout_marginEnd="8dp"
-            android:textColor="#F4F5FC"
-            android:backgroundTint="#8EBBFF"/>
+            android:progressTint="@color/spotify_green"
+            android:thumbTint="@color/spotify_green" />
 
-        <Button
-            android:id="@+id/btnPlay"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Play"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:textColor="#F4F5FC"
-            android:backgroundTint="#8EBBFF"/>
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
 
-        <Button
-            android:id="@+id/btnPlayNext"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            <TextView
+                android:id="@+id/tvTimeBegin"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textSize="12sp"
+                android:textColor="@color/spotify_text_secondary"
+                android:gravity="start"/>
+
+            <TextView
+                android:id="@+id/tvTimeEnd"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textSize="12sp"
+                android:textColor="@color/spotify_text_secondary"
+                android:gravity="end"/>
+        </LinearLayout>
+
+        <!-- Playback Controls Spotify Style -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Next"
-            android:layout_marginStart="8dp"
-            android:textColor="#F4F5FC"
-            android:backgroundTint="#8EBBFF"/>
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
 
+            <Button
+                android:id="@+id/btnPlayPrevious"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:text="⏮"
+                android:textSize="20sp"
+                android:textColor="@color/spotify_text_primary"
+                android:background="@drawable/button_nav"/>
+
+            <Button
+                android:id="@+id/btnPlay"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:text="⏸"
+                android:textSize="26sp"
+                android:textColor="@color/spotify_black"
+                android:background="@drawable/button_circle"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"/>
+
+            <Button
+                android:id="@+id/btnPlayNext"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:text="⏭"
+                android:textSize="20sp"
+                android:textColor="@color/spotify_text_primary"
+                android:background="@drawable/button_nav"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

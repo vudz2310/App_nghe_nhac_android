@@ -1,8 +1,6 @@
 <resources>
-    <string name="app_name">Android_FinalExam</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="SongFragment"></string>
-    <string name="SearchFragment"></string>
-    <string name="AlbumFragment"></string>
-
+    <string name="app_name">Resonance Music</string>
+    <string name="nav_home">Trang chủ</string>
+    <string name="nav_search">Tìm kiếm</string>
+    <string name="nav_library">Thư viện</string>
 </resources>

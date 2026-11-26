@@ -1,5 +1,6 @@
 package com.example.android_finalexam;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -34,7 +36,9 @@ public class FavoritesSong extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
 
         databaseHelper = new DatabaseHelper(this);
-        db = databaseHelper.getReadableDatabase();
+        db = databaseHelper.getWritableDatabase();
+
+        favoriteSongsList = new ArrayList<>();
         loadFavoriteSongs();
 
         songAdapter = new SongAdapter(FavoritesSong.this, favoriteSongsList);
@@ -43,19 +47,29 @@ public class FavoritesSong extends AppCompatActivity {
         listViewFavorites.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Song song = favoriteSongsList.get(position);
-                Intent openMusicPlayer = new Intent(FavoritesSong.this, MainActivity.class);
-                openMusicPlayer.putExtra("song", song);
-                openMusicPlayer.putExtra("currentPosition", position);
-                openMusicPlayer.putExtra("songList", favoriteSongsList); // Gửi danh sách bài hát yêu thích
-                startActivity(openMusicPlayer);
+                if (position >= 0 && position < favoriteSongsList.size()) {
+                    Song song = favoriteSongsList.get(position);
+                    Intent openMusicPlayer = new Intent(FavoritesSong.this, MainActivity.class);
+                    openMusicPlayer.putExtra("song", song);
+                    openMusicPlayer.putExtra("currentPosition", position);
+                    openMusicPlayer.putExtra("songList", favoriteSongsList);
+                    startActivity(openMusicPlayer);
+                }
             }
         });
 
         listViewFavorites.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                removeFavoriteSong(position);
+                if (position >= 0 && position < favoriteSongsList.size()) {
+                    Song song = favoriteSongsList.get(position);
+                    new AlertDialog.Builder(FavoritesSong.this)
+                            .setTitle("Xóa khỏi yêu thích")
+                            .setMessage("Bạn có muốn xóa bài hát \"" + song.getTitle() + "\" khỏi danh sách yêu thích không?")
+                            .setPositiveButton("Xóa", (dialog, which) -> removeFavoriteSong(position))
+                            .setNegativeButton("Hủy", null)
+                            .show();
+                }
                 return true;
             }
         });
@@ -63,24 +77,35 @@ public class FavoritesSong extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish(); // Kết thúc Activity hiện tại để quay lại Activity trước đó (ListSong)
+                finish();
             }
         });
-
     }
 
-    private void loadFavoriteSongs() {
-        favoriteSongsList = new ArrayList<>();
-        Cursor cursor = db.query(DatabaseHelper.TABLE_FAVORITES, null, null, null, null, null, null);
-        while (cursor.moveToNext()) {
-            int id = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_ID));
-            String title = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_TITLE));
-            String artist = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_ARTIST));
-            String imageResource = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_RESOURCE));
-            String audioResource = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_AUDIO_RESOURCE));
-            favoriteSongsList.add(new Song(id, title, artist, imageResource, audioResource));
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadFavoriteSongs();
+        if (songAdapter != null) {
+            songAdapter.notifyDataSetChanged();
         }
-        cursor.close();
+    }
+
+    @SuppressLint("Range")
+    private void loadFavoriteSongs() {
+        favoriteSongsList.clear();
+        Cursor cursor = db.query(DatabaseHelper.TABLE_FAVORITES, null, null, null, null, null, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_ID));
+                String title = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_TITLE));
+                String artist = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_ARTIST));
+                String imageResource = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_IMAGE_RESOURCE));
+                String audioResource = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_AUDIO_RESOURCE));
+                favoriteSongsList.add(new Song(id, title, artist, imageResource, audioResource));
+            }
+            cursor.close();
+        }
     }
 
     private void removeFavoriteSong(int position) {
@@ -88,8 +113,17 @@ public class FavoritesSong extends AppCompatActivity {
             Song songToRemove = favoriteSongsList.get(position);
             favoriteSongsList.remove(position);
             songAdapter.notifyDataSetChanged();
-            db.delete(DatabaseHelper.TABLE_FAVORITES, DatabaseHelper.COLUMN_TITLE + "=?", new String[]{songToRemove.getTitle()});
-            Toast.makeText(this, "Đã xóa bài hát yêu thích", Toast.LENGTH_SHORT).show();
+            db.delete(DatabaseHelper.TABLE_FAVORITES, DatabaseHelper.COLUMN_TITLE + " = ? AND " + DatabaseHelper.COLUMN_ARTIST + " = ?",
+                    new String[]{songToRemove.getTitle(), songToRemove.getArtist()});
+            Toast.makeText(this, "Đã xóa bài hát khỏi danh sách yêu thích", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (db != null && db.isOpen()) {
+            db.close();
         }
     }
 }

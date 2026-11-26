@@ -3,64 +3,89 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#24293E"
-    android:padding="16dp">
+    android:background="@color/spotify_black"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CHỈNH SỬA BÀI HÁT"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/spotify_green"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="24dp" />
 
     <EditText
         android:id="@+id/edtTitle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:hint="Tiêu đề bài hát"
-        android:textColorHint="#F4F5FC"
-        android:textStyle="italic"
-        android:backgroundTint="#F4F5FC"
-        android:textColor="#F4F5FC"/>
+        android:textColorHint="@color/spotify_text_secondary"
+        android:textColor="@color/spotify_text_primary"
+        android:textSize="14sp"
+        android:background="@drawable/input_field_bg"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_marginBottom="12dp" />
 
     <EditText
         android:id="@+id/edtArtist"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Tên ca sĩ"
-        android:textColorHint="#F4F5FC"
-        android:textStyle="italic"
-        android:backgroundTint="#F4F5FC"
-        android:textColor="#F4F5FC"/>
+        android:layout_height="48dp"
+        android:hint="Tên ca sĩ / ban nhạc"
+        android:textColorHint="@color/spotify_text_secondary"
+        android:textColor="@color/spotify_text_primary"
+        android:textSize="14sp"
+        android:background="@drawable/input_field_bg"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_marginBottom="12dp" />
 
     <EditText
         android:id="@+id/edtNameImg"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Tên hình ảnh"
-        android:textColorHint="#F4F5FC"
-        android:textStyle="italic"
-        android:backgroundTint="#F4F5FC"
-        android:textColor="#F4F5FC"/>
+        android:layout_height="48dp"
+        android:hint="Tên ảnh (ví dụ: dead_feelings)"
+        android:textColorHint="@color/spotify_text_secondary"
+        android:textColor="@color/spotify_text_primary"
+        android:textSize="14sp"
+        android:background="@drawable/input_field_bg"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_marginBottom="12dp" />
 
     <EditText
         android:id="@+id/edtNameAudio"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Tên bài hát"
-        android:textColorHint="#F4F5FC"
-        android:textStyle="italic"
-        android:backgroundTint="#F4F5FC"
-        android:textColor="#F4F5FC"/>
+        android:layout_height="48dp"
+        android:hint="Tên audio (ví dụ: viva_lavi_da__coldplay)"
+        android:textColorHint="@color/spotify_text_secondary"
+        android:textColor="@color/spotify_text_primary"
+        android:textSize="14sp"
+        android:background="@drawable/input_field_bg"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_marginBottom="24dp" />
 
     <Button
         android:id="@+id/btnUpdate"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Cập nhật"
-        android:textColor="#F4F5FC"
-        android:backgroundTint="#8EBBFF"/>
+        android:layout_height="48dp"
+        android:text="Lưu thay đổi"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/spotify_black"
+        android:background="@drawable/button_primary"
+        android:layout_marginBottom="12dp"/>
 
     <Button
         android:id="@+id/btnCancel"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Hủy"
-        android:textColor="#F4F5FC"
-        android:backgroundTint="#8EBBFF"/>
+        android:layout_height="48dp"
+        android:text="Hủy bỏ"
+        android:textSize="14sp"
+        android:textColor="@color/spotify_text_primary"
+        android:background="@drawable/button_secondary"/>
 </LinearLayout>

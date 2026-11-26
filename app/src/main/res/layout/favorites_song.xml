@@ -1,34 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#24293E"
-    android:padding="8dp">
+    android:orientation="vertical"
+    android:background="@color/spotify_black"
+    android:padding="16dp">
 
-    <TextView
+    <!-- Top Navigation Bar -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Danh sách bài hát yêu thích"
-        android:textSize="20dp"
-        android:textAllCaps="true"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp"
-        android:textColor="#F4F5FC"/>
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp">
 
-    <Button
-        android:id="@+id/btnBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="Back"
-        android:textColor="#F4F5FC"
-        android:backgroundTint="#8EBBFF"/>
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:text="← Quay lại"
+            android:textSize="13sp"
+            android:textColor="@color/spotify_text_primary"
+            android:background="@drawable/button_secondary"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="BÀI HÁT ĐÃ THÍCH"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/spotify_green"/>
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/lvFavoritesSong"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="4dp"
+        android:scrollbars="none" />
 </LinearLayout>

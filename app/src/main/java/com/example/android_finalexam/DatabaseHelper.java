@@ -40,6 +40,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_IMAGE_RESOURCE + " TEXT, " +
                 COLUMN_AUDIO_RESOURCE + " TEXT)";
         db.execSQL(createFavoritesTable);
+
+        insertDefaultSongs(db);
+    }
+
+    public void insertDefaultSongs(SQLiteDatabase db) {
+        insertSong(db, "Viva La Vida", "Coldplay", "viva_lavi_da", "viva_lavi_da__coldplay");
+        insertSong(db, "Mười Tám", "Kis", "muoitam", "muoitam_kis");
+        insertSong(db, "Dead Feelings", "Moshi", "dead_feelings", "dead_feelings__moshi");
+        insertSong(db, "Wave Alpha", "7uppercuts, Cam", "wave_alpha", "wave_alpha__7uppercuts_cam");
+        insertSong(db, "Đừng Làm Trái Tim Anh Đau", "Sơn Tùng M-TP", "anh1", "dunglamtraitimanhdau");
+        insertSong(db, "I Need Your Love", "Magnus Carlsson", "anh1", "ineedyourlove_magnus_carlsson");
+    }
+
+    private void insertSong(SQLiteDatabase db, String title, String artist, String imageResource, String audioResource) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_TITLE, title);
+        values.put(COLUMN_ARTIST, artist);
+        values.put(COLUMN_IMAGE_RESOURCE, imageResource);
+        values.put(COLUMN_AUDIO_RESOURCE, audioResource);
+        db.insert(TABLE_SONGS, null, values);
+    }
+
+    public void seedDefaultSongsIfEmpty(SQLiteDatabase db) {
+        android.database.Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_SONGS, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst() && cursor.getInt(0) == 0) {
+                insertDefaultSongs(db);
+            }
+            cursor.close();
+        }
     }
 
     @Override
@@ -51,11 +81,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean deleteSong(Song song) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String[] whereArgs = { song.getTitle() }; // Sử dụng tiêu đề của bài hát để xóa
-
-        int deletedRows = db.delete(TABLE_SONGS, COLUMN_TITLE + " = ?", whereArgs);
-        db.close();
-
+        int deletedRows = db.delete(TABLE_SONGS, COLUMN_ID + " = ?", new String[]{String.valueOf(song.getId())});
         return deletedRows > 0;
     }
 
@@ -69,8 +95,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_AUDIO_RESOURCE, newAudioResource);
 
         int rowsAffected = db.update(TABLE_SONGS, contentValues, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
-        db.close();
-
         return rowsAffected > 0;
     }
 

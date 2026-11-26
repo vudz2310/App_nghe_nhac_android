@@ -1,12 +1,9 @@
-// AddSong.java
-
 package com.example.android_finalexam;
 
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -21,9 +18,6 @@ public class AddSong extends AppCompatActivity {
     DatabaseHelper databaseHelper;
     SQLiteDatabase db;
 
-    private boolean isUpdateMode = false;
-    private Song songToUpdate;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,43 +30,32 @@ public class AddSong extends AppCompatActivity {
         btnCancel = findViewById(R.id.btnCancel);
         edtNameAudio = findViewById(R.id.edtNameAudio);
 
-        btnAddSong.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String title = edtTitle.getText().toString();
-                String artist = edtArtist.getText().toString();
-                String imgName = edtNameImg.getText().toString();
-                String audioName = edtNameAudio.getText().toString();
-
-                if (title.isEmpty() || artist.isEmpty() || imgName.isEmpty() || audioName.isEmpty()) {
-                    Toast.makeText(AddSong.this, "Please fill in all fields.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                saveSongToDatabase(title, artist, imgName, audioName);
-
-                Toast.makeText(AddSong.this, "Song added successfully", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        });
-
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
         databaseHelper = new DatabaseHelper(this);
         db = databaseHelper.getWritableDatabase();
+
+        btnAddSong.setOnClickListener(v -> {
+            String title = edtTitle.getText().toString().trim();
+            String artist = edtArtist.getText().toString().trim();
+            String imgName = edtNameImg.getText().toString().trim();
+            String audioName = edtNameAudio.getText().toString().trim();
+
+            if (title.isEmpty() || artist.isEmpty() || imgName.isEmpty() || audioName.isEmpty()) {
+                Toast.makeText(AddSong.this, "Vui lòng nhập đầy đủ các trường thông tin.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            saveSongToDatabase(title, artist, imgName, audioName);
+        });
+
+        btnCancel.setOnClickListener(v -> finish());
     }
 
     private void saveSongToDatabase(String title, String artist, String imageFileName, String audioFileName) {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_TITLE, title);
         values.put(DatabaseHelper.COLUMN_ARTIST, artist);
-        values.put(DatabaseHelper.COLUMN_IMAGE_RESOURCE, imageFileName); // Lưu tên tệp hình ảnh
-        values.put(DatabaseHelper.COLUMN_AUDIO_RESOURCE, audioFileName); // Lưu tên tệp âm thanh
+        values.put(DatabaseHelper.COLUMN_IMAGE_RESOURCE, imageFileName);
+        values.put(DatabaseHelper.COLUMN_AUDIO_RESOURCE, audioFileName);
 
         long newRowId = db.insert(DatabaseHelper.TABLE_SONGS, null, values);
         if (newRowId != -1) {
@@ -80,11 +63,19 @@ public class AddSong extends AppCompatActivity {
             Intent resultIntent = new Intent();
             resultIntent.putExtra("newSong", newSong);
             setResult(RESULT_OK, resultIntent);
-            Toast.makeText(this, "Song saved successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Thêm bài hát thành công", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "Failed to save song", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Không thể lưu bài hát", Toast.LENGTH_SHORT).show();
         }
 
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (db != null && db.isOpen()) {
+            db.close();
+        }
     }
 }

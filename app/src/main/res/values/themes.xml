@@ -1,8 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!-- Base application theme with Spotify Dark Style. -->
     <style name="Base.Theme.Android_FinalExam" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowBackground">@color/spotify_black</item>
+        <item name="android:statusBarColor">@color/spotify_black</item>
+        <item name="android:navigationBarColor">@color/spotify_black</item>
+        <item name="colorPrimary">@color/spotify_green</item>
     </style>
 
     <style name="Theme.Android_FinalExam" parent="Base.Theme.Android_FinalExam" />

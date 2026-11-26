@@ -53,7 +53,11 @@ public class SongAdapter extends ArrayAdapter<Song> {
             // Load image from resources based on image name
             String imageName = song.getImageResource();
             int imageResourceId = getImageResourceId(imageName);
-            viewHolder.imageView.setImageResource(imageResourceId);
+            if (imageResourceId != 0) {
+                viewHolder.imageView.setImageResource(imageResourceId);
+            } else {
+                viewHolder.imageView.setImageResource(R.drawable.playinglogo);
+            }
 
             // Load audio from resources based on audio name
             String audioName = song.getAudioResource();
